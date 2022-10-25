@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
-class MoviesController extends Controller
+class ActorsController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,33 +14,15 @@ class MoviesController extends Controller
      */
     public function index()
     {
-        $popularMovies = Http::withoutVerifying()
+        $popularActors = Http::withoutVerifying()
         ->withToken(config('services.tmdb.token'))
-        ->get('https://api.themoviedb.org/3/movie/popular')
+        ->get('https://api.themoviedb.org/3/person/popular')
         ->json()['results'];
 
-        //dump($popularMovies);
+        dump($popularActors);
 
-        $nowPlayingMovies = Http::withoutVerifying()
-        ->withToken(config('services.tmdb.token'))
-        ->get('https://api.themoviedb.org/3/movie/now_playing')
-        ->json()['results'];
-
-        $genresArray = Http::withoutVerifying()
-        ->withToken(config('services.tmdb.token'))
-        ->get('https://api.themoviedb.org/3/genre/movie/list')
-        ->json()['genres'];
-
-        $genres = collect($genresArray)->mapWithKeys(function ($genre) {
-            return [$genre['id'] => $genre['name']];
-        });
-
-        //dump($nowPlayingMovies);
-
-        return view('movies.index', [
-            'popularMovies' => $popularMovies,
-            'nowPlayingMovies' => $nowPlayingMovies,
-            'genres' => $genres,
+        return view('actors.index', [
+            'popularActors' => $popularActors,
         ]);
     }
 
@@ -73,16 +55,7 @@ class MoviesController extends Controller
      */
     public function show($id)
     {
-        $movie = Http::withoutVerifying()
-        ->withToken(config('services.tmdb.token'))
-        ->get('https://api.themoviedb.org/3/movie/'.$id.'?append_to_response=credits,videos,images')
-        ->json();
-
-        //dump($movie);
-
-        return view('movies.show', [
-            'movie' => $movie,
-        ]);
+        return view('actors.show');
     }
 
     /**
