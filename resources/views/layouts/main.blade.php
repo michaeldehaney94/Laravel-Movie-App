@@ -40,10 +40,7 @@
     </nav>
 
     @yield('content')
-
-    <footer class="border border-t border-gray-800">
-
-    </footer>
     @livewireScripts
+    @yield('scripts')
 </body>
 </html>

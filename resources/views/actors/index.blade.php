@@ -13,7 +13,8 @@
                {{-- loop through content --}}
                @foreach ($popularActors as $actor)
                 <div class="actor mt-8">
-                    <a href="#">
+                    <a href="{{ route('actors.show', $actor['id']) }}">
+                        {{-- If actor profile image does not exist replace with name initials --}}
                         @if ($actor['profile_path'] == null)
                         {{-- filler profile for missing images --}}
                         <img src="{{ 'https://ui-avatars.com/api/?size=235&name='.$actor['name'] }}"
@@ -31,17 +32,57 @@
 
                     </a>
                     <div class="mt-2">
-                        <a href="text-lg hover:text-gray-300">{{ $actor['name'] }}</a>
-                        <div class="text-sm truncate text-gray-400">{{ collect($actor['known_for'])->pluck('title')->implode(', ') }}</div>
+                        <a href="{{ route('actors.show', $actor['id']) }}" class="text-lg hover:text-gray-300">{{ $actor['name'] }}</a>
+                        <div class="text-sm truncate text-gray-400">
+                            {{ collect($actor['known_for'])->where('media_type', 'movie')->pluck('title')
+                                ->union(collect($actor['known_for'])->where('media_type', 'tv')->pluck('name'))
+                                ->implode(', ')
+                            }}
+                        </div>
                     </div>
                 </div>
                @endforeach
 
             </div>
         </div>
+        {{-- Pagination for actors --}}
+        <div class="page-load-status my-8">
+            <div class="flex justify-center">
+                <div class="infinte-scroll-request spinner my-8 text-4xl">&nbsp;</div>
+            </div>
+            <p class="infinite-scroll-last">End of content</p>
+            <p class="infinite-scroll-error">Error</p>
+        </div>
+        {{-- <div class="flex justify-between mt-16">
+            @if ($previous)
+                <a href="/actors/page/{{ $previous }}">Previous</a>
+            @else
+                <div></div>
+            @endif
 
+            @if ($next)
+                <a href="/actors/page/{{ $next }}">Next</a>
+            @else
+                <div></div>
+            @endif
+        </div> --}}
 
     </div>
 
+@endsection
+{{-- Loads more actors onto the screen --}}
+@section('scripts')
+<script src="https://unpkg.com/infinite-scroll@4/dist/infinite-scroll.pkgd.min.js"></script>
+<script>
 
+    let elem = document.querySelector('.grid');
+    let infScroll = new InfiniteScroll( elem, {
+        // options
+        path: '/actors/page/@{{#}}',
+        append: '.actor',
+        status: '.page-load-status'
+        //history: false,
+    });
+
+</script>
 @endsection

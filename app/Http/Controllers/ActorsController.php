@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use App\ViewModels\ActorViewModel;
+use App\ViewModels\ActorsViewModel;
 
 class ActorsController extends Controller
 {
@@ -12,16 +14,22 @@ class ActorsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($page = 1)
     {
+        abort_if($page > 500, 204); //abort pagination page load
+
         $popularActors = Http::withoutVerifying()
         ->withToken(config('services.tmdb.token'))
-        ->get('https://api.themoviedb.org/3/person/popular')
+        ->get('https://api.themoviedb.org/3/person/popular?page='.$page)
         ->json()['results'];
 
         dump($popularActors);
 
-        return view('actors.index', [
+        //view model used to create pagination for API
+        $viewModel = new ActorsViewModel($page);
+
+        return view('actors.index',
+        $viewModel, [
             'popularActors' => $popularActors,
         ]);
     }
@@ -55,7 +63,39 @@ class ActorsController extends Controller
      */
     public function show($id)
     {
-        return view('actors.show');
+        $actor = Http::withoutVerifying()
+        ->withToken(config('services.tmdb.token'))
+        ->get('https://api.themoviedb.org/3/person/'.$id)
+        ->json();
+
+        $social = Http::withoutVerifying()
+        ->withToken(config('services.tmdb.token'))
+        ->get('https://api.themoviedb.org/3/person/'.$id.'/external_ids')
+        ->json();
+
+        $credits = Http::withoutVerifying()
+        ->withToken(config('services.tmdb.token'))
+        ->get('https://api.themoviedb.org/3/person/'.$id.'/combined_credits')
+        ->json()['cast'];
+
+        $castMovies = collect($credits)->where('media_type', 'movie')->sortByDesc('popularity')->take(20)
+        ->map(function($movie) {
+            return $movie;
+        });
+
+        $creditsDetail = collect($castMovies)->map(function($credit) {
+            return $credit;
+        })->sortByDesc('release_date');
+
+        //dump($creditsDetail);
+
+        return view('actors.show', [
+            'actor' => $actor,
+            'social' => $social,
+            'castMovies' => $castMovies,
+            // 'credits' => $credits,
+            'creditsDetail' => $creditsDetail,
+        ]);
     }
 
     /**
