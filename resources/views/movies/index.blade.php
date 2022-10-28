@@ -2,7 +2,6 @@
 
 @section('content')
 
-
     <div class="container mx-auto px-4 pt-16">
 
         {{-- Popular Movies --}}

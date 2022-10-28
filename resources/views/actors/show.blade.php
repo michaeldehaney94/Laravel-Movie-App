@@ -57,7 +57,12 @@
                                 <a href="{{ route('movies.show', $movie['id']) }}">
                                     <img src="{{ 'https://www.themoviedb.org/t/p/w300_and_h450_bestv2/'.$movie['poster_path'] }}" alt="Untitled" class="hover:opacity-75 transition ease-in-out duration-150">
                                     <a href="" class="text-sm leading-normal block text-gray-400 hover:text-white mt-1">
-                                        {{ $movie['title'] }}
+                                       {{-- used condition statement to display tv and movie name/title, due to different API labels for data --}}
+                                        @if (isset($movie['title']))
+                                            {{ $movie['title'] }}
+                                        @elseif (isset($movie['name']))
+                                            {{ $movie['name'] }}
+                                        @endif
                                     </a>
                                 </a>
                             </div>
@@ -71,7 +76,12 @@
                 <h2 class="text-4xl font-semibold">Credits</h2>
                 <ul class="list-disc leading-loose pl-5 mt-8">
                     @foreach ($creditsDetail as $credit)
-                        <li>{{ \Carbon\Carbon::parse($credit['release_date'])->format('Y') }} &middot; <strong>{{ $credit['title'] }}</strong> as {{ $credit['character'] }}</li>
+                        {{-- used condition statement to display release dates for tv/movie, due to different API labels for data --}}
+                        @if (isset($credit['release_date']))
+                            <li>{{ \Carbon\Carbon::parse($credit['release_date'])->format('Y') }} &middot; <strong>{{ $credit['title'] }}</strong> as {{ $credit['character'] }}</li>
+                        @elseif (isset($credit['first_air_date']))
+                            <li>{{ \Carbon\Carbon::parse($credit['first_air_date'])->format('Y') }} &middot; <strong>{{ $credit['name'] }}</strong> as {{ $credit['character'] }}</li>
+                        @endif
                     @endforeach
                 </ul>
             </div>

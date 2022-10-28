@@ -48,7 +48,7 @@
         {{-- Pagination for actors --}}
         <div class="page-load-status my-8">
             <div class="flex justify-center">
-                <div class="infinte-scroll-request spinner my-8 text-4xl">&nbsp;</div>
+                <div class="infinite-scroll-request spinner my-8 text-4xl">&nbsp;</div>
             </div>
             <p class="infinite-scroll-last">End of content</p>
             <p class="infinite-scroll-error">Error</p>
@@ -70,7 +70,7 @@
     </div>
 
 @endsection
-{{-- Loads more actors onto the screen --}}
+{{-- Loads more actors onto a single screen --}}
 @section('scripts')
 <script src="https://unpkg.com/infinite-scroll@4/dist/infinite-scroll.pkgd.min.js"></script>
 <script>

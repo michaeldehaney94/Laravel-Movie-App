@@ -1,13 +1,15 @@
 <?php
 
 namespace Tests\Feature;
+
+use Tests\TestCase;
+use Livewire\Livewire;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
-use Tests\TestCase;
 
 class ViewMoviesTest extends TestCase
 {
+    /** @test */
     public function the_main_page_shows_correct_info()
     {
         Http::fake([

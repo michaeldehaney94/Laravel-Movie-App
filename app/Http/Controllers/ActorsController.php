@@ -23,7 +23,7 @@ class ActorsController extends Controller
         ->get('https://api.themoviedb.org/3/person/popular?page='.$page)
         ->json()['results'];
 
-        dump($popularActors);
+        //dump($popularActors);
 
         //view model used to create pagination for API
         $viewModel = new ActorsViewModel($page);
@@ -78,7 +78,8 @@ class ActorsController extends Controller
         ->get('https://api.themoviedb.org/3/person/'.$id.'/combined_credits')
         ->json()['cast'];
 
-        $castMovies = collect($credits)->where('media_type', 'movie')->sortByDesc('popularity')->take(20)
+        //$castMovies = collect($credits)->where('media_type', 'movie')->sortByDesc('popularity')->take(20)
+        $castMovies = collect($credits)->sortByDesc('popularity')->take(15)
         ->map(function($movie) {
             return $movie;
         });
@@ -88,12 +89,14 @@ class ActorsController extends Controller
         })->sortByDesc('release_date');
 
         //dump($creditsDetail);
+        //dump($castMovies);
+        //dump($credits);
 
         return view('actors.show', [
             'actor' => $actor,
             'social' => $social,
             'castMovies' => $castMovies,
-            // 'credits' => $credits,
+            //'credits' => $credits,
             'creditsDetail' => $creditsDetail,
         ]);
     }

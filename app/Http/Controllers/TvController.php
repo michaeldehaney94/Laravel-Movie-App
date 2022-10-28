@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
-class MoviesController extends Controller
+class TvController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,33 +14,32 @@ class MoviesController extends Controller
      */
     public function index()
     {
-        $popularMovies = Http::withoutVerifying()
+        $popularTv = Http::withoutVerifying()
         ->withToken(config('services.tmdb.token'))
-        ->get('https://api.themoviedb.org/3/movie/popular')
+        ->get('https://api.themoviedb.org/3/tv/popular')
         ->json()['results'];
 
-        //dump($popularMovies);
-
-        $nowPlayingMovies = Http::withoutVerifying()
+        $topRatedTv = Http::withoutVerifying()
         ->withToken(config('services.tmdb.token'))
-        ->get('https://api.themoviedb.org/3/movie/now_playing')
+        ->get('https://api.themoviedb.org/3/tv/top_rated')
         ->json()['results'];
 
         $genresArray = Http::withoutVerifying()
         ->withToken(config('services.tmdb.token'))
-        ->get('https://api.themoviedb.org/3/genre/movie/list')
+        ->get('https://api.themoviedb.org/3/genre/tv/list')
         ->json()['genres'];
 
         $genres = collect($genresArray)->mapWithKeys(function ($genre) {
             return [$genre['id'] => $genre['name']];
         });
 
-        //dump($nowPlayingMovies);
+        //dump($popularTv);
+        //dump($topRatedTv);
         //dump($genres);
 
-        return view('movies.index', [
-            'popularMovies' => $popularMovies,
-            'nowPlayingMovies' => $nowPlayingMovies,
+        return view('tv.index', [
+            'popularTv' => $popularTv,
+            'topRatedTv' => $topRatedTv,
             'genres' => $genres,
         ]);
     }
@@ -74,15 +73,15 @@ class MoviesController extends Controller
      */
     public function show($id)
     {
-        $movie = Http::withoutVerifying()
+        $tvshow = Http::withoutVerifying()
         ->withToken(config('services.tmdb.token'))
-        ->get('https://api.themoviedb.org/3/movie/'.$id.'?append_to_response=credits,videos,images')
+        ->get('https://api.themoviedb.org/3/tv/'.$id.'?append_to_response=credits,videos,images')
         ->json();
 
-        //dump($movie);
+        //dump($tvshow);
 
-        return view('movies.show', [
-            'movie' => $movie,
+        return view('tv.show', [
+            'tvshow' => $tvshow,
         ]);
     }
 
